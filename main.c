@@ -8,8 +8,14 @@
 #include <stdint.h>
 #include <ncurses.h>
 
+/* ## Base. */
+
 const char KEY_QUIT = 'q';
 const int UPDATE_DELAY = 20;
+
+
+int max(int a, int b) {return (a > b) ? a : b;}
+int min(int a, int b) {return (a < b) ? a : b;}
 
 struct Canyon {
   int width;
@@ -17,12 +23,14 @@ struct Canyon {
   char border;
 };
 
+
+/* ## States. */
+
 struct Canyon canyon_create(void) {
   int *xs = malloc(sizeof(int) * LINES);
   for (int i = 0; i < LINES; i++) {
     xs[i] = COLS / 2;
   }
-
   return (struct Canyon) {
     .xs = xs,
     .border = '#',
@@ -34,16 +42,17 @@ void canyon_free(struct Canyon *canyon) {
   return;
 }
 
+/** Create and print a line at `y` of the Canyon. */
 void canyone_line(struct Canyon *canyon, int y) {
   char *line = malloc(sizeof(char) * (COLS + 1));
-  for (int i = 0; i < LINES; i++) {
+  for (int i = 0; i < COLS; i++) {
     line[i] = (canyon->xs[y] - canyon->width / 2 == i || canyon->xs[y] + canyon->width / 2 == i)
     ? canyon->border
     : ' ';
   }
   line[COLS] = '\0';
 
-  mvprintw(y, 0, line);
+  mvprintw(y, 0, "%s", line);
   free(line);
   return;
 }
@@ -78,8 +87,7 @@ void state_free(struct State *state) {
   return;
 }
 
-int max(int a, int b) {return (a > b) ? a : b;}
-int min(int a, int b) {return (a < b) ? a : b;}
+/* ## Window. */
 
 NCURSES_BOOL is_running(struct State *state) {
   return (state->input != KEY_QUIT);  
@@ -104,7 +112,7 @@ void update(struct State *state) {
   }
 
   // Cyclist.
-  mvprintw(LINES - 2, state->cyclist.x, state->cyclist.icon); 
+  mvprintw(LINES - 2, state->cyclist.x, "%s", state->cyclist.icon); 
 
 
   return;
