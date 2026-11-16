@@ -26,16 +26,16 @@ struct Rng {
   uint32_t b;
 };
 
-struct Rng rng_create(void) {
-  return (struct Rng) {
+struct Rng rng;
+
+void rng_create(void) {
+  rng = (struct Rng) {
     .current = RNG_SEED,
     .modulo = RNG_MOD,
     .a = 68987,
     .b = 1096838,
   };
 }
-
-struct Rng rng;
 
 /** Compute the next pesudo-random number, stores it and returns it. */
 uint32_t rng_next() {
@@ -99,8 +99,8 @@ int canyon_generate(struct Canyon *canyon) {
 
 /** Roll the canyon. `0` is top, `LINES - 2` is last visible. */
 void canyon_roll(struct Canyon *canyon) {
-  for (int y = LINES - 2; y >= 0; y--) {
-    canyon->xs[y + 1] = canyon->xs[y];
+  for (int y = LINES - 1; y > 0; y--) {
+    canyon->xs[y] = canyon->xs[y - 1];
   }
   canyon->xs[0] = canyon_generate(canyon);
   return;
@@ -108,9 +108,21 @@ void canyon_roll(struct Canyon *canyon) {
 
 struct Cyclist {
   int x;
+  int y;
+  unsigned int life;
   char *icon;
 };
 
+struct Cyclist cyclist_create(void) {
+  return (struct Cyclist) {
+    .x = COLS / 2,
+    .y = 0,
+    .life = 1,
+    .icon = "^",
+  };
+}
+
+/** Global shared game state. */
 struct State {
   char input;
   int distance;
@@ -123,10 +135,7 @@ struct State state_create(void) {
     .input = ' ',
     .distance = 0,
     .canyon = canyon_create(),
-    .cyclist = (struct Cyclist) {
-      .x = COLS / 2,
-      .icon = "^",
-    },
+    .cyclist = cyclist_create(),
   };
   mvprintw(LINES - 1, 0, "(?) x=%d", state.cyclist.x);
 
@@ -138,10 +147,29 @@ void state_free(struct State *state) {
   return;
 }
 
+void check_collisions(struct State *state) {
+  int cx = state->canyon.xs[LINES - 2 - state->cyclist.y];
+  int cw = state->canyon.width;
+  if (
+    state->cyclist.life > 0
+    && (state->cyclist.x < cx - cw / 2
+    || state->cyclist.x > cx + cw / 2)
+  ) {
+    state->cyclist.life -= 1;    
+  }
+  return;
+}
+
 /* ## Window. */
 
 NCURSES_BOOL is_running(struct State *state) {
-  return (state->input != KEY_QUIT);  
+  return (
+    state->input != KEY_QUIT
+    && (
+      state->cyclist.life > 0
+      || state->distance < 23
+    )
+  );  
 }
 
 void input_read(struct State *state) {
@@ -155,7 +183,7 @@ void input_read(struct State *state) {
 
 /** Refreshes the screen to clear remaining drawings. */
 void clean(struct State *state) {
-  mvprintw(LINES - 2, state->cyclist.x, " "); 
+  mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, " "); 
   return;
 }
 
@@ -163,8 +191,8 @@ void draw(struct State *state) {
   // Infos.
   mvprintw(
     LINES - 1, 0,
-    "(?) SCORE: d=%d  CYCLE: x=%d  CANY: w=%d, x=%d",
-    state->distance, state->cyclist.x, state->canyon.width, state->canyon.xs[0]
+    "(?) SCORE: d=%d  CYCLE: l=%u x=%d  CANY: w=%d x=%d",
+    state->distance, state->cyclist.life, state->cyclist.x, state->canyon.width, state->canyon.xs[0]
   );
 
   // Canyon.
@@ -173,7 +201,7 @@ void draw(struct State *state) {
   }
 
   // Cyclist.
-  mvprintw(LINES - 2, state->cyclist.x, "%s", state->cyclist.icon); 
+  mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, "%s", state->cyclist.icon); 
 
   return;
 }
@@ -183,6 +211,7 @@ void update(struct State *state) {
   clean(state);
 
   canyon_roll(&state->canyon);
+  check_collisions(state);
   state->distance += 1;
   
   input_read(state);
@@ -194,7 +223,7 @@ void update(struct State *state) {
 /** Start the `ncurses` windows. */
 void run(void) {
   // Crée l'object `rng`
-  rng = rng_create();
+  rng_create();
 
   // Crée l'objet écran `stdscr`.
   initscr();
@@ -217,12 +246,19 @@ void run(void) {
     timeout(UPDATE_DELAY);
   }
   endwin();
+
+  printf("\n## End. \n");
+  printf("Score: d=%d \n", state.distance);
   state_free(&state);
 }
 
 /** Point d'entrée du TP9: canyon infernal. */
 int main(void) {
   printf("# TP9: Canyon infernal.\n");
+  printf("Repo: `https://github.com/Detroix23/DosInfernaleCanyone`\n\n");
+
+  printf("## Settings. \n");
+  printf("- RNG_SEED=%u \n", RNG_SEED);
 
   run();
 
