@@ -10,10 +10,21 @@
 
 /* ## Base. */
 
-const char KEY_QUIT = 'q';
 const int UPDATE_DELAY = 20;
 const int RNG_SEED = 6769;
 const int RNG_MOD = UINT32_MAX;
+
+int COLOR_PLAYER = COLOR_RED;
+int COLOR_BACKGROUND = COLOR_BLACK;
+int COLOR_WALL = COLOR_WHITE;
+int COLOR_TEXT = COLOR_CYAN;
+
+const char KEY_QUIT = 'q';
+const char CUSTOM_LEFT_KEY = 'h'; // LEFT_KEY et RIGHT_KEY : Indisponibles
+const char CUSTOM_RIGHT_KEY = 'l';
+
+// Pour démo couleur
+const char KEY_RANDOM_COLOR = 'f';
 
 int max(int a, int b) {return (a > b) ? a : b;}
 int min(int a, int b) {return (a < b) ? a : b;}
@@ -37,7 +48,7 @@ void rng_create(void) {
   };
 }
 
-/** Compute the next pseudo-random number, stores it and returns it. */
+/** Compute the next pesudo-random number, stores it and returns it. */
 uint32_t rng_next() {
   return (rng.current = (rng.a * rng.current + rng.b) % rng.modulo);
 }
@@ -106,6 +117,23 @@ void canyon_roll(struct Canyon *canyon) {
   return;
 }
 
+struct Palette {
+	int player;
+	int canyon;
+	int text;
+};
+
+struct Palette palette_create(void) {
+	init_pair(1, COLOR_PLAYER, COLOR_BACKGROUND);
+	init_pair(2, COLOR_WALL, COLOR_BACKGROUND);
+	init_pair(3, COLOR_TEXT, COLOR_BACKGROUND);
+	return (struct Palette) {
+	  .player = 1,
+	  .canyon = 2,
+	  .text = 3,
+	};
+}
+
 struct Cyclist {
   int x;
   int y;
@@ -128,6 +156,7 @@ struct State {
   int distance;
   struct Canyon canyon;
   struct Cyclist cyclist;
+  struct Palette palette;
 };
 
 struct State state_create(void) {
@@ -136,6 +165,7 @@ struct State state_create(void) {
     .distance = 0,
     .canyon = canyon_create(),
     .cyclist = cyclist_create(),
+    .palette = palette_create(),
   };
   mvprintw(LINES - 1, 0, "(?) x=%d", state.cyclist.x);
 
@@ -160,6 +190,17 @@ void check_collisions(struct State *state) {
   return;
 }
 
+/* Démo couleurs random */
+void change_randomly_colors(struct State *state) {
+	COLOR_BACKGROUND = rand()%8;
+	COLOR_TEXT = rand()%8;
+	COLOR_PLAYER = rand()%8;
+	COLOR_WALL = rand()%8;
+	state->palette = palette_create();
+	return;
+	
+}
+
 /* ## Window. */
 
 NCURSES_BOOL is_running(struct State *state) {
@@ -173,9 +214,13 @@ NCURSES_BOOL is_running(struct State *state) {
 }
 
 void input_read(struct State *state) {
-  if (state->input == 'h') {
+	// Démo couleurs random 
+	if (state->input == KEY_RANDOM_COLOR) {
+		change_randomly_colors(state);
+	}
+  if (state->input == CUSTOM_LEFT_KEY) {
     state->cyclist.x = max(0, state->cyclist.x - 1);
-  } else if (state->input == 'l') {
+  } else if (state->input == CUSTOM_RIGHT_KEY) {
     state->cyclist.x = min(COLS - 1, state->cyclist.x + 1);
   }
   return;
@@ -189,6 +234,7 @@ void clean(struct State *state) {
 
 void draw(struct State *state) {
   // Infos.
+  attron(COLOR_PAIR(state->palette.text));
   mvprintw(
     LINES - 1, 0,
     "(?) SCORE: d=%d  CYCLE: l=%u x=%d  CANY: w=%d x=%d",
@@ -196,11 +242,13 @@ void draw(struct State *state) {
   );
 
   // Canyon.
+  attron(COLOR_PAIR(state->palette.canyon));
   for (int y = 0; y < LINES - 1; y++) {
     canyone_line(&state->canyon, y);      
   }
 
   // Cyclist.
+  attron(COLOR_PAIR(state->palette.player));
   mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, "%s", state->cyclist.icon); 
 
   return;
@@ -229,6 +277,10 @@ void run(void) {
   initscr();
 
   noecho();
+  
+  // Initialise les couleurs
+  start_color();
+  
   // Positione le curseur au tout début de l'écran.
   curs_set(0);
 
@@ -248,7 +300,7 @@ void run(void) {
   endwin();
 
   printf("\n## End. \n");
-  printf("Score: d=%d \n", state.distance);
+  printf("- Score: d=%d \n", state.distance);
   state_free(&state);
 }
 
@@ -256,6 +308,9 @@ void run(void) {
 int main(void) {
   printf("# TP9: Canyon infernal.\n");
   printf("Repo: `https://github.com/Detroix23/DosInfernaleCanyone`\n\n");
+
+	printf("## Keys. \n");
+	printf("- Left : %c\n- Right : %c\n- Quit : %c\n\n", CUSTOM_LEFT_KEY, CUSTOM_RIGHT_KEY, KEY_QUIT);
 
   printf("## Settings. \n");
   printf("- RNG_SEED=%u \n", RNG_SEED);
