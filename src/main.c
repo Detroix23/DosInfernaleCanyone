@@ -17,9 +17,6 @@ int main(void) {
   printf("# TP9: Canyon infernal.\n");
   printf("Repo: `https://github.com/Detroix23/DosInfernaleCanyone`\n\n");
 
-	printf("## Keys. \n");
-	printf("- Left : %c\n- Right : %c\n- Quit : %c\n\n", KEY_LEFT_CUSTOM, KEY_RIGHT_CUSTOM, KEY_QUIT);
-
   printf("## Settings. \n");
   printf("- RNG_SEED=%u \n", RNG_SEED);
 

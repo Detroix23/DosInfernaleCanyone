@@ -42,4 +42,25 @@ void state_free(struct State *state) {
   return;
 }
 
+void set_quiting(struct State *state) { state->running = FALSE; }
+
+NCURSES_BOOL is_running(struct State *state) { return (
+  state->running
+  && (
+    state->cyclist.life > 0
+    || state->distance < 23
+  )
+); }
+
+/** Démo couleurs random */
+void change_randomly_colors(struct State *state) {
+	COLOR_BACKGROUND = rand()%8;
+	COLOR_TEXT = rand()%8;
+	COLOR_PLAYER = rand()%8;
+	COLOR_WALL = rand()%8;
+	state->palette = palette_create();
+	return;
+	
+}
+
 #endif

@@ -5,6 +5,8 @@
 #ifndef INFERNAL_CANYON_CANYON
 #define INFERNAL_CANYON_CANYON
 
+#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
 
@@ -21,15 +23,25 @@ struct Canyon {
 };
 
 struct Canyon canyon_create(void) {
-  int *xs = malloc(sizeof(int) * LINES);
-  for (int i = 0; i < LINES; i++) {
-    xs[i] = COLS / 2;
+  size_t xsl = sizeof(int) * LINES;
+  int *xs = (int *) malloc(xsl);
+  if (xs == NULL || LINES < 1) {
+    endwin();
+    printf(
+      "(X) %s:%d %s() Alloc `xs` failed for %ld bytes or LINES=%d invalid. \n",
+      __FILE__, __LINE__, __func__, xsl, LINES
+    );
+    exit(1);
   }
-  return (struct Canyon) {
+  struct Canyon canyon = {
     .width = 20,
     .xs = xs,
     .border = '#',
   };
+  for (int i = 0; i < LINES; i++) {
+    canyon.xs[i] = COLS / 2;
+  }
+  return canyon;
 }
 
 void canyon_free(struct Canyon *canyon) {
@@ -39,7 +51,7 @@ void canyon_free(struct Canyon *canyon) {
 
 /** Create and print a line at `y` of the Canyon. */
 void canyone_line(struct Canyon *canyon, int y) {
-  char *line = malloc(sizeof(char) * (COLS + 1));
+  char *line = (char *) malloc(sizeof(char) * (COLS + 1));
   for (int i = 0; i < COLS; i++) {
     line[i] = (
       canyon->xs[y] - canyon->width / 2 == i

@@ -6,6 +6,8 @@
 #define INFERNAL_CANYON_GAME
 
 #include <ncurses.h>
+#include <stddef.h>
+#include <stdio.h>
 
 #include "./constants.c"
 #include "./rng.c"
@@ -13,6 +15,7 @@
 #include "./canyon.c"
 #include "./cyclist.c"
 #include "./state.c"
+#include "./inputs.c"
 
 void check_collisions(struct State *state) {
   int cx = state->canyon.xs[LINES - 2 - state->cyclist.y];
@@ -23,51 +26,6 @@ void check_collisions(struct State *state) {
     || state->cyclist.x > cx + cw / 2)
   ) {
     state->cyclist.life -= 1;    
-  }
-  return;
-}
-
-/** Démo couleurs random */
-void change_randomly_colors(struct State *state) {
-	COLOR_BACKGROUND = rand()%8;
-	COLOR_TEXT = rand()%8;
-	COLOR_PLAYER = rand()%8;
-	COLOR_WALL = rand()%8;
-	state->palette = palette_create();
-	return;
-	
-}
-
-/* # Window. */
-
-NCURSES_BOOL is_running(struct State *state) {
-  return (
-    state->running
-    && (
-      state->cyclist.life > 0
-      || state->distance < 23
-    )
-  );  
-}
-
-void set_quiting(struct State *state) { state->running = FALSE; }
-
-void input_read(struct State *state) {
-	if (state->input == KEY_QUIT) {
-	  set_quiting(state);
-	} if (state->input == KEY_RANDOM_COLOR) {
-	  // Démo couleurs random.
-		change_randomly_colors(state);
-	} if (state->input == KEY_LEFT_CUSTOM) {
-    cyclist_move(&state->cyclist, -1, 0);   
-  } if (state->input == KEY_RIGHT_CUSTOM) {
-    cyclist_move(&state->cyclist, 1, 0);    
-  } if (state->input == KEY_UP_CUSTOM) {
-    cyclist_move(&state->cyclist, 0, 1);    
-  } if (state->input == KEY_DOWN_CUSTOM) {
-    cyclist_move(&state->cyclist, 0, -1);    
-  } if (state->input == KEY_DASH) {
-    cyclist_trigger_dash(&state->cyclist);
   }
   return;
 }
@@ -103,7 +61,7 @@ void draw(struct State *state) {
 }
 
 /** Mise-à-jour toutes les frames. */
-void update(struct State *state) {
+void update(struct State *state, struct Bindings *bindings) {
   clean(state);
 
   canyon_roll(&state->canyon);
@@ -111,9 +69,24 @@ void update(struct State *state) {
   check_collisions(state);
   state->distance += 1;
   
-  input_read(state);
+  input_read(state, bindings);
 
   draw(state);
+  return;
+}
+
+void window_initialize(void) {
+  // Crée l'objet écran `stdscr`.
+  initscr();
+  noecho();
+  // Initialise les couleurs
+  start_color();
+  // Positione le curseur au tout début de l'écran.
+  curs_set(0);
+  refresh();
+  // Débloque les appels à `getch`.
+  nodelay(stdscr, TRUE);
+
   return;
 }
 
@@ -122,27 +95,25 @@ void run(void) {
   // Crée l'object `rng`
   rng_create();
 
-  // Crée l'objet écran `stdscr`.
-  initscr();
+  struct Bindings bindings = bindings_create(); // (struct Bindings) {NULL, 0};
 
-  noecho();
+  printf("## Keys. \n");
+  for (size_t i = 0; i < bindings.length; i++) {
+    printf(
+      "- `%c`: %s ;\n",
+      bindings.bindings[i].key,
+      bindings.bindings[i].description
+    );
+  }
+
+  window_initialize();
   
-  // Initialise les couleurs
-  start_color();
-  
-  // Positione le curseur au tout début de l'écran.
-  curs_set(0);
-
-  refresh();
-  // Débloque les appels à `getch`.
-  nodelay(stdscr, TRUE);
-
   struct State state = state_create();
-  
+
   while (is_running(&state)) {  
     state.input = getch();
 
-    update(&state);
+    update(&state, &bindings);
 
     timeout(UPDATE_DELAY);
   }
@@ -151,6 +122,7 @@ void run(void) {
   printf("\n## End. \n");
   printf("- Score: d=%d \n", state.distance);
   state_free(&state);
+  bindings_free(&bindings);
 }
 
 #endif

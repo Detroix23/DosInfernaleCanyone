@@ -39,7 +39,7 @@ void cyclist_trigger_dash(struct Cyclist *cyclist) {
 }
 
 int cyclist_apply_dash(struct Cyclist *cyclist, int v) {
-  if (cyclist->dash_triggered) {
+  if (v != 0 && cyclist->dash_triggered) {
     cyclist->dash_triggered = FALSE;
     cyclist->dash_cooldown = DASH_COOLDOWN;
     return v * DASH_FACTOR;
