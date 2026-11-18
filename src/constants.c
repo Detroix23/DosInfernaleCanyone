@@ -14,9 +14,15 @@ const int UPDATE_DELAY = 20;
 
 const char KEY_QUIT = 'q';
 // LEFT_KEY et RIGHT_KEY : déjà prises par `ncurses`.
-const char CUSTOM_LEFT_KEY = 'h'; 
-const char CUSTOM_RIGHT_KEY = 'l';
+const char KEY_LEFT_CUSTOM = 'h'; 
+const char KEY_RIGHT_CUSTOM = 'l';
+const char KEY_UP_CUSTOM = 'k'; 
+const char KEY_DOWN_CUSTOM = 'j';
+const char KEY_DASH = ' ';
 // Pour démo couleur
 const char KEY_RANDOM_COLOR = 'f';
+
+const int DASH_COOLDOWN = 60;
+const int DASH_FACTOR = 3;
 
 #endif

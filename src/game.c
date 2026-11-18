@@ -8,7 +8,6 @@
 #include <ncurses.h>
 
 #include "./constants.c"
-#include "./maths.c"
 #include "./rng.c"
 #include "./colors.c"
 #include "./canyon.c"
@@ -43,7 +42,7 @@ void change_randomly_colors(struct State *state) {
 
 NCURSES_BOOL is_running(struct State *state) {
   return (
-    state->input != KEY_QUIT
+    state->running
     && (
       state->cyclist.life > 0
       || state->distance < 23
@@ -51,15 +50,24 @@ NCURSES_BOOL is_running(struct State *state) {
   );  
 }
 
+void set_quiting(struct State *state) { state->running = FALSE; }
+
 void input_read(struct State *state) {
-	// Démo couleurs random 
-	if (state->input == KEY_RANDOM_COLOR) {
+	if (state->input == KEY_QUIT) {
+	  set_quiting(state);
+	} if (state->input == KEY_RANDOM_COLOR) {
+	  // Démo couleurs random.
 		change_randomly_colors(state);
-	}
-  if (state->input == CUSTOM_LEFT_KEY) {
-    state->cyclist.x = max(0, state->cyclist.x - 1);
-  } else if (state->input == CUSTOM_RIGHT_KEY) {
-    state->cyclist.x = min(COLS - 1, state->cyclist.x + 1);
+	} if (state->input == KEY_LEFT_CUSTOM) {
+    cyclist_move(&state->cyclist, -1, 0);   
+  } if (state->input == KEY_RIGHT_CUSTOM) {
+    cyclist_move(&state->cyclist, 1, 0);    
+  } if (state->input == KEY_UP_CUSTOM) {
+    cyclist_move(&state->cyclist, 0, 1);    
+  } if (state->input == KEY_DOWN_CUSTOM) {
+    cyclist_move(&state->cyclist, 0, -1);    
+  } if (state->input == KEY_DASH) {
+    cyclist_trigger_dash(&state->cyclist);
   }
   return;
 }
@@ -75,8 +83,10 @@ void draw(struct State *state) {
   attron(COLOR_PAIR(state->palette.text));
   mvprintw(
     LINES - 1, 0,
-    "(?) SCORE: d=%d  CYCLE: l=%u x=%d  CANY: w=%d x=%d",
-    state->distance, state->cyclist.life, state->cyclist.x, state->canyon.width, state->canyon.xs[0]
+    "(?) SCORE: d=%d  CYCLE: l=%u x=%d y=%d d=%d dt=%d dCANY: w=%d x=%d",
+    state->distance, state->cyclist.life, state->cyclist.x, state->cyclist.y,
+    state->cyclist.dash_triggered, state->cyclist.dash_cooldown,
+    state->canyon.width, state->canyon.xs[0]
   );
 
   // Canyon.
@@ -97,6 +107,7 @@ void update(struct State *state) {
   clean(state);
 
   canyon_roll(&state->canyon);
+  cyclist_update(&state->cyclist);
   check_collisions(state);
   state->distance += 1;
   
