@@ -21,11 +21,21 @@ Built on `ncurses`.
 
 Development :
 ```sh
-gcc main.c -o main -Wall -Wextra -Werror -pedantic -std=c11 -lncurses -fsanitize=address
+make dev
+```
+
+- Routine for :
+```sh
+gcc main.c -o bin/main_dev -g -Wall -Wextra -Werror -pedantic -std=c11 -lncurses -fsanitize=address
 ./main
 ```
 
 Release :
 ```sh
-gcc main.c -o infernal-canyon-v1.0 -Wall -Wextra -Werror -pedantic -std=c11 -lncurses -O2
+make release
+```
+
+- Routine for :
+```sh
+gcc main.c -o bin/infernal-canyon-vX.Y -O2 -lncurses
 ```
