@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-const int RNG_SEED = 6769;
-const int RNG_MOD = UINT32_MAX;
+#include "./constants.c"
 
 /** Simple congruential random number generator. */
 struct Rng {
@@ -18,8 +17,10 @@ struct Rng {
   uint32_t b;
 };
 
+/** Global singleton to reach out when generating RNG. */
 struct Rng rng;
 
+/** First initalization of the `rng` singleton. */
 void rng_create(void) {
   rng = (struct Rng) {
     .current = RNG_SEED,
