@@ -4,9 +4,9 @@ CFLAGS_RELEASE := -O2
 LIBRARIES := -lncurses
 
 dev:
-	@echo "Building for development."
-	$(CC) main.c $(CFLAGS_DEV) -o bin/main-dev $(LIBRARIES)
+	@echo "Building for development \`main-dev\`."
+	$(CC) src/main.c $(CFLAGS_DEV) -o bin/main-dev $(LIBRARIES)
 
 release:
-	@echo "Building for release."
-	$(CC) main.c $(CFLAGS_RELEASE) -o bin/infernal-canyone-v1.1 $(LIBRARIES)
+	@echo "Building for release \`infernal-canyone-v1.1\`."
+	$(CC) src/main.c $(CFLAGS_RELEASE) -o bin/infernal-canyone-v1.1 $(LIBRARIES)
