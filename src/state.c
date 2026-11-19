@@ -11,9 +11,17 @@
 #include "./canyon.c"
 #include "./cyclist.c"
 
+/** # `Menu` state. */ 
+enum Menu {
+  START,
+  CANYON,
+  DEATH,
+  QUITTING,
+};
+
 /** Global shared game state. */
 struct State {
-  NCURSES_BOOL running;
+  enum Menu menu;
   char input;
   int distance;
   struct Canyon canyon;
@@ -24,7 +32,7 @@ struct State {
 /** Create the initial state. */
 struct State state_create(void) {
   struct State state = {
-    .running = TRUE,
+    .menu = CANYON,
     .input = ' ',
     .distance = 0,
     .canyon = canyon_create(),
@@ -42,10 +50,10 @@ void state_free(struct State *state) {
   return;
 }
 
-void set_quiting(struct State *state) { state->running = FALSE; }
+void set_quiting(struct State *state) { state->menu = QUITTING; }
 
 NCURSES_BOOL is_running(struct State *state) { return (
-  state->running
+  state->menu != QUITTING
   && (
     state->cyclist.life > 0
     || state->distance < 23
