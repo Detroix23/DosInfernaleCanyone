@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "./constants.c"
+#include "./system.c"
 #include "./state.c"
 
 /**
@@ -48,7 +49,7 @@ void trigger_dash(struct State *state) {
 struct Bindings bindings_create(void) {
   size_t l = 7;
   struct Bindings b = {
-    .bindings = malloc(sizeof(struct KeyBinding) * l),
+    .bindings = salloc("b.bindings", sizeof(struct KeyBinding), l),
     .length = l,
   };
   b.bindings[0] = (struct KeyBinding) {KEY_QUIT, &set_quiting, "quits the game"};
@@ -65,6 +66,18 @@ struct Bindings bindings_create(void) {
 void bindings_free(struct Bindings *bindings) {
   free(bindings->bindings);
 
+  return;
+}
+
+void bindings_print(struct Bindings *bindings) {
+  printf("## Keys. \n");
+  for (size_t i = 0; i < bindings->length; i++) {
+    printf(
+      "- `%c`: %s ;\n",
+      bindings->bindings[i].key,
+      bindings->bindings[i].description
+    );
+  }
   return;
 }
 

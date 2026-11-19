@@ -36,8 +36,7 @@ void clean(struct State *state) {
   return;
 }
 
-void draw(struct State *state) {
-  // Infos.
+void draw_canyon(struct State *state) {
   attron(COLOR_PAIR(state->palette.text));
   mvprintw(
     LINES - 1, 0,
@@ -56,6 +55,23 @@ void draw(struct State *state) {
   // Cyclist.
   attron(COLOR_PAIR(state->palette.player));
   mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, "%s", state->cyclist.icon); 
+
+  return;
+}
+
+void draw(struct State *state) {
+  // Infos.
+  switch (state->menu) {
+    case START:
+      return;
+    case CANYON:
+      draw_canyon(state);
+      return;
+    case DEATH:
+      return;
+    case QUITTING:
+      return;
+  }
 
   return;
 }
@@ -96,15 +112,7 @@ void run(void) {
   rng_create();
 
   struct Bindings bindings = bindings_create(); // (struct Bindings) {NULL, 0};
-
-  printf("## Keys. \n");
-  for (size_t i = 0; i < bindings.length; i++) {
-    printf(
-      "- `%c`: %s ;\n",
-      bindings.bindings[i].key,
-      bindings.bindings[i].description
-    );
-  }
+  bindings_print(&bindings);
 
   window_initialize();
   
