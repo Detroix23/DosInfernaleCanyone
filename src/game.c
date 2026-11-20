@@ -16,6 +16,8 @@
 #include "./cyclist.c"
 #include "./state.c"
 #include "./inputs.c"
+#include "./draw.c"
+#include "./maths.c"
 
 void check_collisions(struct State *state) {
   int cx = state->canyon.xs[LINES - 2 - state->cyclist.y];
@@ -55,7 +57,18 @@ void draw_canyon(struct State *state) {
   // Cyclist.
   attron(COLOR_PAIR(state->palette.player));
   mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, "%s", state->cyclist.icon); 
-
+  
+  struct Sprite s1 = sprite_create(
+    (struct Vector2D) {3, 3},
+    (
+      "123"
+      "456"
+      "789"
+    )
+  );
+  sprite_draw((struct Vector2D) {10, 10}, &s1);
+  // sprite_free(&s1);
+  
   return;
 }
 
@@ -63,13 +76,16 @@ void draw(struct State *state) {
   // Infos.
   switch (state->menu) {
     case START:
+      mvprintw(0, 0, "(WIP) Start menu.");
       return;
     case CANYON:
       draw_canyon(state);
       return;
     case DEATH:
+      mvprintw(0, 0, "(WIP) Death menu.");
       return;
     case QUITTING:
+      mvprintw(0, 0, "(WIP) Quitting menu.");
       return;
   }
 
@@ -87,7 +103,6 @@ void update(struct State *state, struct Bindings *bindings) {
   
   input_read(state, bindings);
 
-  draw(state);
   return;
 }
 
@@ -122,6 +137,7 @@ void run(void) {
     state.input = getch();
 
     update(&state, &bindings);
+    draw(&state);
 
     timeout(UPDATE_DELAY);
   }
