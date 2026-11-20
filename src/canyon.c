@@ -79,4 +79,8 @@ void canyon_roll(struct Canyon *canyon) {
   return;
 }
 
+bool is_in_canyon(struct Canyon *canyon, int x, int y){
+	return ((x >= canyon->xs[y]-canyon->width/2)&&(x <= canyon->xs[y]+canyon->width/2));
+}
+
 #endif

@@ -10,6 +10,7 @@
 #include "./colors.c"
 #include "./canyon.c"
 #include "./cyclist.c"
+#include "./fire.c"
 
 /** # `Menu` state. */ 
 enum Menu {
@@ -27,6 +28,7 @@ struct State {
   struct Canyon canyon;
   struct Cyclist cyclist;
   struct Palette palette;
+  struct Fire fire;
 };
 
 /** Create the initial state. */
@@ -38,6 +40,7 @@ struct State state_create(void) {
     .canyon = canyon_create(),
     .cyclist = cyclist_create(),
     .palette = palette_create(),
+    .fire = fire_create(),
   };
   mvprintw(LINES - 1, 0, "(?) x=%d", state.cyclist.x);
 
@@ -47,6 +50,7 @@ struct State state_create(void) {
 /** Destroy appropriately the state. */
 void state_free(struct State *state) {
   canyon_free(&state->canyon);
+  fire_free(&state->fire);
   return;
 }
 

@@ -21,8 +21,11 @@ const char KEY_DOWN_CUSTOM = 'j';
 const char KEY_DASH = ' ';
 // Pour démo couleur
 const char KEY_RANDOM_COLOR = 'f';
-
+// Pour dash
 const int DASH_COOLDOWN = 60;
 const int DASH_FACTOR = 3;
-
+// Pour valeurs initiales du feu
+double const INTENSITY = 0.5;
+const double COOLING = 0.25;
+const int MAX_FIRE = 100;
 #endif

@@ -8,6 +8,7 @@
 #include <ncurses.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "./constants.c"
 #include "./rng.c"
@@ -18,23 +19,25 @@
 #include "./inputs.c"
 #include "./draw.c"
 #include "./maths.c"
+#include "./fire.c"
+
+int x = 0;
 
 void check_collisions(struct State *state) {
-  int cx = state->canyon.xs[LINES - 2 - state->cyclist.y];
-  int cw = state->canyon.width;
   if (
     state->cyclist.life > 0
-    && (state->cyclist.x < cx - cw / 2
-    || state->cyclist.x > cx + cw / 2)
-  ) {
+    && 
+    (!(is_in_canyon(&state->canyon, state->cyclist.x, LINES - 2 - state->cyclist.y)))){
     state->cyclist.life -= 1;    
   }
   return;
 }
 
 /** Refreshes the screen to clear remaining drawings. */
-void clean(struct State *state) {
-  mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, " "); 
+// Is it even useful ? canyone_line print an entire fresh new line
+// Erased struct State *state to avoid error unused-parameter
+void clean(void) {
+  //mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, " "); 
   return;
 }
 
@@ -53,6 +56,15 @@ void draw_canyon(struct State *state) {
   for (int y = 0; y < LINES - 1; y++) {
     canyone_line(&state->canyon, y);      
   }
+
+	// Fire
+	for (int i = 0; i < LINES-1; i++){
+		for (int j = 0; j < COLS; j++){
+			if (!(is_in_canyon(&state->canyon, j, i))){
+				mvprintw(i, j, "%c", get_char_fire(state->fire.structure[i][j].heat, state->palette));
+			}
+		}
+	}
 
   // Cyclist.
   attron(COLOR_PAIR(state->palette.player));
@@ -94,12 +106,12 @@ void draw(struct State *state) {
 
 /** Mise-à-jour toutes les frames. */
 void update(struct State *state, struct Bindings *bindings) {
-  clean(state);
-
+  //clean(state); /!\ Need to be refactored, useless for now
   canyon_roll(&state->canyon);
   cyclist_update(&state->cyclist);
   check_collisions(state);
   state->distance += 1;
+  fire_update(&state->fire);
   
   input_read(state, bindings);
 
@@ -132,10 +144,8 @@ void run(void) {
   window_initialize();
   
   struct State state = state_create();
-
   while (is_running(&state)) {  
     state.input = getch();
-
     update(&state, &bindings);
     draw(&state);
 
