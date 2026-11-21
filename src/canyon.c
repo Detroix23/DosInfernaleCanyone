@@ -67,7 +67,7 @@ int canyon_generate(struct Canyon *canyon) {
       x_next -= 1;
       break;
   }; 
-  return max(canyon->width / 2, min(x_next, COLS - canyon->width / 2));
+  return max(canyon->width / 2, min(x_next, COLS - 1 - canyon->width / 2));
 }  
 
 /** Roll the canyon. `0` is top, `LINES - 2` is last visible. */

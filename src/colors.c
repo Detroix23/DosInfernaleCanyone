@@ -22,6 +22,13 @@ struct Palette {
 	int background;
 };
 
+void set_blue_fire(struct Palette * palette){
+	init_pair(palette->weak_fire, COLOR_BLUE, COLOR_BACKGROUND);
+	init_pair(palette->mid_fire, COLOR_CYAN, COLOR_BACKGROUND);
+	init_pair(palette->strong_fire, COLOR_WHITE, COLOR_BACKGROUND);
+	return;
+}
+
 struct Palette palette_create(void) {
 	init_pair(1, COLOR_PLAYER, COLOR_BACKGROUND);
 	init_pair(2, COLOR_WALL, COLOR_BACKGROUND);
