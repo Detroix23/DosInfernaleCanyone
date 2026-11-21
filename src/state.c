@@ -42,7 +42,6 @@ struct State state_create(void) {
     .palette = palette_create(),
     .fire = fire_create(),
   };
-  set_blue_fire(&state.palette);
   mvprintw(LINES - 1, 0, "(?) x=%d", state.cyclist.x);
 
   return state;
