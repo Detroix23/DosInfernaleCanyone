@@ -6,9 +6,7 @@
 #define INFERNAL_CANYON_GAME
 
 #include <ncurses.h>
-#include <stddef.h>
 #include <stdio.h>
-#include <assert.h>
 
 #include "./constants.c"
 #include "./rng.c"
@@ -21,13 +19,11 @@
 #include "./maths.c"
 #include "./fire.c"
 
-int x = 0;
-
 void check_collisions(struct State *state) {
   if (
     state->cyclist.life > 0
-    && 
-    (!(is_in_canyon(&state->canyon, state->cyclist.x, LINES - 2 - state->cyclist.y)))){
+    && !(is_in_canyon(&state->canyon, state->cyclist.x, LINES - 2 - state->cyclist.y))
+  ) {
     state->cyclist.life -= 1;    
   }
   return;
@@ -53,19 +49,31 @@ void draw_menu_canyon(struct State *state) {
     canyone_line(&state->canyon, y);      
   }
 
-	// Fire
+	// Fire.
 	for (int i = 0; i < LINES-1; i++){
 		for (int j = 0; j < COLS; j++){
 			if (!(is_in_canyon(&state->canyon, j, i))){
-				mvprintw(i, j, "%c", get_char_fire(state->fire.structure[i][j].heat, state->palette));
+				mvprintw(
+          i, 
+          j, 
+          "%c", 
+          get_char_fire(state->fire.structure[i][j].heat, 
+            state->palette
+        ));
 			}
 		}
 	}
 
   // Cyclist.
   attron(COLOR_PAIR(state->palette.player));
-  mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, "%s", state->cyclist.icon); 
-  
+  sprite_centered(
+    vector2d(
+      state->cyclist.x,
+      LINES - 2 - state->cyclist.y
+    ),
+    &state->cyclist.sprite
+  );
+
   return;
 }
 
@@ -94,7 +102,6 @@ void draw(struct State *state) {
 
 /** Mise-à-jour toutes les frames. */
 void update(struct State *state, struct Bindings *bindings) {
-  //clean(state); /!\ Need to be refactored, useless for now
   canyon_roll(&state->canyon);
   cyclist_update(&state->cyclist);
   check_collisions(state);
@@ -112,7 +119,7 @@ void window_initialize(void) {
   noecho();
   // Initialise les couleurs
   start_color();
-  // Positione le curseur au tout début de l'écran.
+  // Positionne le curseur au tout début de l'écran.
   curs_set(0);
   refresh();
   // Débloque les appels à `getch`.
@@ -123,7 +130,6 @@ void window_initialize(void) {
 
 /** Start the `ncurses` windows. */
 void run(void) {
-  // Crée l'object `rng`
   rng_create();
 
   struct Bindings bindings = bindings_create(); // (struct Bindings) {NULL, 0};
@@ -132,6 +138,7 @@ void run(void) {
   window_initialize();
   
   struct State state = state_create();
+
   while (is_running(&state)) {  
     state.input = getch();
     update(&state, &bindings);
@@ -143,6 +150,7 @@ void run(void) {
 
   printf("\n## End. \n");
   printf("- Score: d=%d \n", state.distance);
+
   state_free(&state);
   bindings_free(&bindings);
 }

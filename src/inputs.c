@@ -21,6 +21,14 @@ struct KeyBinding {
   char *description;
 };
 
+struct KeyBinding key_binding(  
+  char key,
+  void (*action)(struct State *state),
+  char *description
+) {
+  return (struct KeyBinding) {key, action, description};
+} 
+
 /**
  * Structured array of `KeyBinding`s.
  */
@@ -52,13 +60,13 @@ struct Bindings bindings_create(void) {
     .bindings = salloc("b.bindings", sizeof(struct KeyBinding), l),
     .length = l,
   };
-  b.bindings[0] = (struct KeyBinding) {KEY_QUIT, &set_quiting, "quits the game"};
-  b.bindings[1] = (struct KeyBinding) {KEY_RANDOM_COLOR, &change_randomly_colors, "toggle epilleptic mode"};
-  b.bindings[2] = (struct KeyBinding) {KEY_LEFT_CUSTOM, &cyclist_move_left, "move left"};
-  b.bindings[3] = (struct KeyBinding) {KEY_RIGHT_CUSTOM, &cyclist_move_right, "move right"};
-  b.bindings[4] = (struct KeyBinding) {KEY_UP_CUSTOM, &cyclist_move_up, "move up"};
-  b.bindings[5] = (struct KeyBinding) {KEY_DOWN_CUSTOM, &cyclist_move_down, "move down"};
-  b.bindings[6] = (struct KeyBinding) {KEY_DASH, &trigger_dash, "trigger dash"};
+  b.bindings[0] = key_binding(KEY_QUIT, &set_quitting, "quits the game");
+  b.bindings[1] = key_binding(KEY_RANDOM_COLOR, &change_randomly_colors, "toggle epileptic mode");
+  b.bindings[2] = key_binding(KEY_LEFT_CUSTOM, &cyclist_move_left, "move left");
+  b.bindings[3] = key_binding(KEY_RIGHT_CUSTOM, &cyclist_move_right, "move right");
+  b.bindings[4] = key_binding(KEY_UP_CUSTOM, &cyclist_move_up, "move up");
+  b.bindings[5] = key_binding(KEY_DOWN_CUSTOM, &cyclist_move_down, "move down");
+  b.bindings[6] = key_binding(KEY_DASH, &trigger_dash, "trigger dash");
 
   return b;
 }
@@ -90,24 +98,6 @@ void input_read(struct State *state, struct Bindings *bindings) {
 	return;
 }
 
-/* Old conditions :
-if (state->input == KEY_QUIT) {
-	  set_quiting(state);
-	} if (state->input == KEY_RANDOM_COLOR) {
-	  // Démo couleurs random.
-		change_randomly_colors(state);
-	} if (state->input == KEY_LEFT_CUSTOM) {
-    cyclist_move(&state->cyclist, -1, 0);   
-  } if (state->input == KEY_RIGHT_CUSTOM) {
-    cyclist_move(&state->cyclist, 1, 0);    
-  } if (state->input == KEY_UP_CUSTOM) {
-    cyclist_move(&state->cyclist, 0, 1);    
-  } if (state->input == KEY_DOWN_CUSTOM) {
-    cyclist_move(&state->cyclist, 0, -1);    
-  } if (state->input == KEY_DASH) {
-    cyclist_trigger_dash(&state->cyclist);
-  }
-*/
 
 #endif
 

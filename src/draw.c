@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "./arrays.c"
 #include "./maths.c"
 
 /**
@@ -20,18 +21,18 @@
  */
 struct Sprite {
   struct Vector2D size;
-  char *data;
+  struct String string;
 };
 
-struct Sprite sprite_create(struct Vector2D size, char *data) {
+struct Sprite sprite(struct Vector2D size, struct String string) {
   return (struct Sprite) {
     .size = size,
-    .data = data,
+    .string = string,
   };
 }
 
 void sprite_free(struct Sprite *sprite) {
-  free(sprite->data);
+  string_free(&sprite->string);
   return;
 }
 
@@ -41,10 +42,24 @@ void sprite_draw(struct Vector2D position, struct Sprite *sprite) {
       mvaddch(
         position.y + y,
         position.x + x,
-        sprite->data[sprite->size.y * y + x]
+        string_get(&sprite->string, sprite->size.x * y + x)
       );
     }
   }
+  return;
 }
+
+/** Draws `sprite` centered. */
+void sprite_centered(struct Vector2D position, struct Sprite *sprite) {
+  sprite_draw(
+    vector2d(
+      position.x - sprite->size.x / 2,
+      position.y + sprite->size.y / 2
+    ), 
+    sprite
+  );
+  return;
+}
+
 
 #endif
