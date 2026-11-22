@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <ncurses.h>
 
 #include "./constants.c"
@@ -22,7 +21,6 @@ void cli_print(size_t argc, char *argv[]) {
   return;
 }
 
-/* ## Window. */
 /** Point d'entrée du TP9: canyon infernal. */
 int main(int argc, char *argv[]) {
   printf("# TP9: Canyon infernal.\n");

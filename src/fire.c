@@ -47,7 +47,7 @@ void fire_free(struct Fire * fire){
 	return;
 }
 
-/*Fire visual*/
+/** Fire visual. */
 char get_char_fire(int heat, struct Palette palette){
 	// COLOR
 	if (heat > 0.4*MAX_FIRE){
@@ -90,7 +90,7 @@ int average_heat_neighbours(struct Fire * fire, int x, int y){
 	)/5;
 }
 
-/* Fire generation */
+/** Fire generation */
 void seed_fire(struct Fire * fire){
 	for (int i = 0; i < fire->intensity*COLS; i++){
 		fire->structure[LINES-1][rand()%COLS].newHeat = rand()%MAX_FIRE;

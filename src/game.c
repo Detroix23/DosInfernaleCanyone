@@ -33,19 +33,15 @@ void check_collisions(struct State *state) {
   return;
 }
 
-/** Refreshes the screen to clear remaining drawings. */
-// Is it even useful ? canyone_line print an entire fresh new line
-// Erased struct State *state to avoid error unused-parameter
-void clean(void) {
-  //mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, " "); 
-  return;
-}
-
-void draw_canyon(struct State *state) {
+/** 
+ * Draw component for the `CANYON` menu state.
+ * Actual gameplay.
+ */
+void draw_menu_canyon(struct State *state) {
   attron(COLOR_PAIR(state->palette.text));
   mvprintw(
     LINES - 1, 0,
-    "(?) SCORE: d=%d  CYCLE: l=%u x=%d y=%d d=%d dt=%d dCANY: w=%d x=%d",
+    "(?) SCORE: d=%d CYCLE: l=%u x=%d y=%d d=%d dt=%d CANY: w=%d x=%d",
     state->distance, state->cyclist.life, state->cyclist.x, state->cyclist.y,
     state->cyclist.dash_triggered, state->cyclist.dash_cooldown,
     state->canyon.width, state->canyon.xs[0]
@@ -70,20 +66,12 @@ void draw_canyon(struct State *state) {
   attron(COLOR_PAIR(state->palette.player));
   mvprintw(LINES - 2 - state->cyclist.y, state->cyclist.x, "%s", state->cyclist.icon); 
   
-  struct Sprite s1 = sprite_create(
-    (struct Vector2D) {3, 3},
-    (
-      "123"
-      "456"
-      "789"
-    )
-  );
-  sprite_draw((struct Vector2D) {10, 10}, &s1);
-  // sprite_free(&s1);
-  
   return;
 }
 
+/**
+ * Main junction to draw all menu states.
+ */
 void draw(struct State *state) {
   // Infos.
   switch (state->menu) {
@@ -91,7 +79,7 @@ void draw(struct State *state) {
       mvprintw(0, 0, "(WIP) Start menu.");
       return;
     case CANYON:
-      draw_canyon(state);
+      draw_menu_canyon(state);
       return;
     case DEATH:
       mvprintw(0, 0, "(WIP) Death menu.");
