@@ -34,7 +34,7 @@ struct Cyclist {
 struct Cyclist cyclist_create(struct Sprite sprite) {
   return (struct Cyclist) {
     .x = COLS / 2,
-    .y = 1,
+    .y = LINES-2,
     .life = 1,
     .dash_cooldown = 0,
     .dash_triggered = FALSE,
@@ -67,7 +67,7 @@ int cyclist_apply_dash(struct Cyclist *cyclist, int v) {
 /** Move the cyclist by a `x` and `y` offset. */
 void cyclist_move(struct Cyclist *cyclist, int x, int y) {  
   cyclist->x = clamp(0, cyclist->x + cyclist_apply_dash(cyclist, x), COLS);
-  cyclist->y = clamp(1, cyclist->y + cyclist_apply_dash(cyclist, y), LINES - 2);
+  cyclist->y = clamp(0, cyclist->y + cyclist_apply_dash(cyclist, y), LINES - 2);
   return;
 }
 

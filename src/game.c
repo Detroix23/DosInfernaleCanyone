@@ -23,7 +23,7 @@
 void check_collisions(struct State *state) {
   if (
     state->cyclist.life > 0
-    && !(is_in_canyon(&state->canyon, state->cyclist.x, LINES - 2 - state->cyclist.y))
+    && !(is_in_canyon(&state->canyon, state->cyclist.x, state->cyclist.y))
   ) {
     state->cyclist.life -= 1;    
   }
@@ -58,10 +58,10 @@ void draw_menu_canyon(struct State *state) {
 
   // Cyclist.
   attron(COLOR_PAIR(state->palette.player));
-  sprite_centered(
+  sprite_x_centered(
     vector2d(
       state->cyclist.x,
-      LINES - 2 - state->cyclist.y
+      state->cyclist.y
     ),
     &state->cyclist.sprite
   );
@@ -105,14 +105,12 @@ void draw(struct State *state) {
 
 /** Mise-à-jour toutes les frames. */
 void update(struct State *state, struct Bindings *bindings) {
-  canyon_roll(&state->canyon);
+  input_read(state, bindings);
+  canyon_roll(&state->canyon);  
   cyclist_update(&state->cyclist);
   check_collisions(state);
   state->distance += 1;
-  fire_update(&state->fire);
-  
-  input_read(state, bindings);
-
+  fire_update(&state->fire);  
   return;
 }
 
@@ -143,6 +141,7 @@ void run(void) {
   struct State state = state_create();
 
   while (is_running(&state)) {  
+  	nodelay(stdscr, FALSE);
     state.input = getch();
     update(&state, &bindings);
     draw(&state);

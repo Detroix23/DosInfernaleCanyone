@@ -69,7 +69,6 @@ NCURSES_BOOL is_running(struct State *state) { return (
   state->menu != QUITTING
   && (
     state->cyclist.life > 0
-    || state->distance < 23
   )
 ); }
 

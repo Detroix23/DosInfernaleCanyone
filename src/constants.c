@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-const int RNG_SEED = 6769;
+const int RNG_SEED = 6769; // Highest score : 7409 :p
 const int RNG_MOD = UINT32_MAX;
 
 const int UPDATE_DELAY = 20;
@@ -20,9 +20,6 @@ const char KEY_RIGHT_CUSTOM = 'l';
 const char KEY_UP_CUSTOM = 'k'; 
 const char KEY_DOWN_CUSTOM = 'j';
 const char KEY_DASH = ' ';
-
-// Pour démo couleur
-const char KEY_RANDOM_COLOR = 'f';
 
 // Pour dash
 const int DASH_COOLDOWN = 60;

@@ -38,22 +38,24 @@ void sprite_free(struct Sprite *sprite) {
 void sprite_draw(struct Vector2D position, struct Sprite *sprite) {
   for (int y = 0; y < sprite->size.y; y++) {
     for (int x = 0; x < sprite->size.x; x++) {
-      mvaddch(
-        position.y + y,
-        position.x + x,
-        string_get(&sprite->string, sprite->size.x * y + x)
-      );
+      if (string_get(&sprite->string, sprite->size.x * y + x) != ' '){ // Avoid void non-sense square
+		  mvaddch(
+		    position.y + y,
+		    position.x + x,
+		    string_get(&sprite->string, sprite->size.x * y + x)
+		  );
+			}
     }
   }
   return;
 }
 
-/** Draws `sprite` centered. */
-void sprite_centered(struct Vector2D position, struct Sprite *sprite) {
+/** Draws `sprite` centered. not on y axe (seem more accurate since head of object are used)*/
+void sprite_x_centered(struct Vector2D position, struct Sprite *sprite) {
   sprite_draw(
     vector2d(
       position.x - sprite->size.x / 2,
-      position.y + sprite->size.y / 2
+      position.y
     ), 
     sprite
   );
