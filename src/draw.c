@@ -60,5 +60,11 @@ void sprite_centered(struct Vector2D position, struct Sprite *sprite) {
   return;
 }
 
+void line_fill(int y, char character) {
+  for (int x = 0; x <  COLS; x++) {
+    mvaddch(y, x, character);
+  }
+}
+
 
 #endif

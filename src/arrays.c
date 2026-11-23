@@ -65,7 +65,6 @@ char string_get(struct String *string, size_t index) {
   return string->data[index];
 }
 
-
 /**
  * Safer `int` array.
  */
@@ -96,21 +95,46 @@ void int_array_free(struct IntArray *array) {
   return;
 }
 
-int int_array_get(struct IntArray *array, size_t index) {
+/**
+ * Prefer the macro `int_array_get`.
+ */
+int int_array_geti(
+  struct IntArray *array,
+  size_t index,
+  const char *file,
+  const int line,
+  const char *function
+) {
   if (index >= array->length) {
     endwin();
-    eprintf("| length=%ld", array->length);
+    eprintf("\n| length=%ld\n", array->length);
     eprintf("| index=%ld", index);
-    throw("Invalid access of `IntArray` element");
+    throwi("Invalid access of `IntArray` element", file, line, function);
   }
   return array->data[index];
 }
 
-/** Set the value and returns the old one. */
-int int_array_set(struct IntArray *array, size_t index, int value) {
-  int previous = int_array_get(array, index);
+#define int_array_get(array, index) \
+  int_array_geti(array, index, __FILE__, __LINE__, __func__)
+
+/**
+ * Set the value and returns the old one.
+ * Prefer the macro `int_array_set`.
+ */
+int int_array_seti(
+  struct IntArray *array,
+  size_t index,
+  int value,
+  const char *file,
+  const int line,
+  const char *function
+) {
+  int previous = int_array_geti(array, index, file, line, function);
   array->data[index] = value;
   return previous;
 }
+
+#define int_array_set(array, index, value) \
+  int_array_seti(array, index, value, __FILE__, __LINE__, __func__)
 
 #endif

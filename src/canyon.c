@@ -100,7 +100,7 @@ void canyon_roll(struct Canyon *canyon) {
     int_array_set(
       &canyon->xs,
       y,
-      int_array_get(&canyon->xs, y - 1)
+       int_array_get(&canyon->xs, y - 1)
     );
     int_array_set(
       &canyon->widths,
@@ -114,8 +114,14 @@ void canyon_roll(struct Canyon *canyon) {
 
 bool is_in_canyon(struct Canyon *canyon, int x, int y){
 	return (
-	  (x >= int_array_get(&canyon->xs, y) - int_array_get(&canyon->widths, y) / 2)
-	  && (x <= int_array_get(&canyon->xs, y) + int_array_get(&canyon->widths, y) /2)
+	  (x >= (
+	    int_array_get(&canyon->xs, y)
+	    - int_array_get(&canyon->widths, y) / 2)
+	  )
+	  && (x <= (
+	    int_array_get(&canyon->xs, y)
+	    + int_array_get(&canyon->widths, y) /2)
+    )
 	);
 }
 

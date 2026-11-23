@@ -35,16 +35,6 @@ void check_collisions(struct State *state) {
  * Actual gameplay.
  */
 void draw_menu_canyon(struct State *state) {
-  attron(COLOR_PAIR(state->palette.text));
-  mvprintw(
-    LINES - 1, 0,
-    "(?) SCORE: d=%d CYCLE: l=%u x=%d y=%d d=%d dt=%d CANY: w=%d x=%d",
-    state->distance, state->cyclist.life, state->cyclist.x, state->cyclist.y,
-    state->cyclist.dash_triggered, state->cyclist.dash_cooldown,
-    int_array_get(&state->canyon.widths, 0),
-    int_array_get(&state->canyon.xs, 0)
-  );
-
   // Canyon.
   attron(COLOR_PAIR(state->palette.canyon));
   for (int y = 0; y < LINES - 1; y++) {
@@ -74,6 +64,17 @@ void draw_menu_canyon(struct State *state) {
       LINES - 2 - state->cyclist.y
     ),
     &state->cyclist.sprite
+  );
+
+  attron(COLOR_PAIR(state->palette.text));
+  line_fill(LINES - 1, ' ');
+  mvprintw(
+    LINES - 1, 0,
+    "(?) SCORE: d=%d CYCLE: l=%u x=%d y=%d d=%d dt=%d CANY: w=%d x=%d",
+    state->distance, state->cyclist.life, state->cyclist.x, state->cyclist.y,
+    state->cyclist.dash_triggered, state->cyclist.dash_cooldown,
+    int_array_get(&state->canyon.widths, 0),
+    int_array_get(&state->canyon.xs, 0)
   );
 
   return;
