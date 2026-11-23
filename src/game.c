@@ -41,7 +41,8 @@ void draw_menu_canyon(struct State *state) {
     "(?) SCORE: d=%d CYCLE: l=%u x=%d y=%d d=%d dt=%d CANY: w=%d x=%d",
     state->distance, state->cyclist.life, state->cyclist.x, state->cyclist.y,
     state->cyclist.dash_triggered, state->cyclist.dash_cooldown,
-    int_array_get(&state->canyon.widths, 0), state->canyon.xs[0]
+    int_array_get(&state->canyon.widths, 0),
+    int_array_get(&state->canyon.xs, 0)
   );
 
   // Canyon.
