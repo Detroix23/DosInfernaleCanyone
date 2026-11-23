@@ -30,4 +30,9 @@ int min(int a, int b) { return (a < b) ? a : b; }
  */
 int clamp(int a, int v, int b) { return max(a, min(v, b)); }
 
+/** Returns `true` if a <= v <= b. */
+NCURSES_BOOL is_flanked(int a, int v, int b) {
+  return a <= v && v <= b;
+}
+
 #endif

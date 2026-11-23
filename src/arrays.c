@@ -2,6 +2,9 @@
  * # The Infernal Canyon.
  * arrays.c
 */
+#ifndef INFERNAL_CANYON_ARRAYS
+#define INFERNAL_CANYON_ARRAYS
+
 #include <stddef.h>
 #include <ncurses.h>
 
@@ -61,3 +64,53 @@ char string_get(struct String *string, size_t index) {
   }
   return string->data[index];
 }
+
+
+/**
+ * Safer `int` array.
+ */
+struct IntArray {
+  int *data;
+  size_t length;
+};
+
+struct IntArray int_array_empty(size_t length) {
+  struct IntArray a = {
+    .data = salloc("int_array.auto-data", sizeof(int), length),
+    .length = length
+  };
+  return a;
+}
+
+/** Create an `IntArray` with dynamically allocated memory for `data`. */
+struct IntArray int_array(int *data, size_t length) {
+  struct IntArray a = int_array_empty(length);
+  for (size_t i = 0; i < length; i++) {
+    a.data[i] = data[i];
+  }
+  return a;
+}
+
+void int_array_free(struct IntArray *array) {
+  free(array->data);
+  return;
+}
+
+int int_array_get(struct IntArray *array, size_t index) {
+  if (index >= array->length) {
+    endwin();
+    eprintf("| length=%ld", array->length);
+    eprintf("| index=%ld", index);
+    throw("Invalid access of `IntArray` element");
+  }
+  return array->data[index];
+}
+
+/** Set the value and returns the old one. */
+int int_array_set(struct IntArray *array, size_t index, int value) {
+  int previous = int_array_get(array, index);
+  array->data[index] = value;
+  return previous;
+}
+
+#endif

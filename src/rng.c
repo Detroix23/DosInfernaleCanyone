@@ -31,7 +31,7 @@ void rng_create(void) {
 }
 
 /** Compute the next pesudo-random number, stores it and returns it. */
-uint32_t rng_next() {
+uint32_t rng_next(void) {
   return (rng.current = (rng.a * rng.current + rng.b) % rng.modulo);
 }
 

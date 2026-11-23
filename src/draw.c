@@ -8,7 +8,6 @@
 #include <limits.h>
 #include <ncurses.h>
 #include <stddef.h>
-#include <stdlib.h>
 
 #include "./arrays.c"
 #include "./maths.c"
