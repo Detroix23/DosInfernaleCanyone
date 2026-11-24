@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS_DEV := -g -Wall -Wextra -Werror -Iinclude -std=c11 -pedantic -fsanitize=address
+CFLAGS_DEV := -g -Wall -Wextra -Werror -Iinclude -std=c11 -pedantic -fsanitize=address -DDEBUG
 CFLAGS_RELEASE := -O2
 LIBRARIES := -lncurses
 MAJOR := 1

@@ -5,7 +5,19 @@
 #ifndef INFERNAL_CANYON_CONSTANTS
 #define INFERNAL_CANYON_CONSTANTS
 
+#include <stdbool.h>
 #include <stdint.h>
+#include <ncurses.h>
+
+
+/* Set the global DEBUG constant according to -DDEBUG compiler flag. */
+#ifdef DEBUG
+  /** `-DDEBUG` flag is on. */
+  const bool DEBUG_ENABLED = true;
+#else
+  /** `-DDEBUG` flag is off. */ 
+  const bool DEBUG_ENABLED = false;
+#endif
 
 const int RNG_SEED = 6769; // Highest score : 7409 :p
 const int RNG_MOD = UINT32_MAX;
