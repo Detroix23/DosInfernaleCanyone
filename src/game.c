@@ -71,8 +71,9 @@ void draw_menu_canyon(struct State *state) {
   line_fill(LINES - 1, ' ');
   mvprintw(
     LINES - 1, 0,
-    "(?) SCORE: d=%d CYCLE: l=%u x=%d y=%d d=%d dt=%d CANY: w=%d x=%d",
-    state->distance, state->cyclist.life, state->cyclist.x, state->cyclist.y,
+    "(?) SCORE: d=%d blck=%s CYCLE: l=%u x=%d y=%d d=%d dt=%d CANY: w=%d x=%d",
+    state->distance, state->delay_input ? "true" : "false",
+    state->cyclist.life, state->cyclist.x, state->cyclist.y,
     state->cyclist.dash_triggered, state->cyclist.dash_cooldown,
     int_array_get(&state->canyon.widths, 0),
     int_array_get(&state->canyon.xs, 0)

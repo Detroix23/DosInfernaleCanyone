@@ -57,7 +57,7 @@ struct CliFlags cli_create(void) {
 
   // Debug.
   flags.flags[0] = flag("--god", &cli_enable_god, "make the player invicible");
-  flags.flags[1] = flag("--blocking-input", &cli_enable_god, "blocks the game on input.");
+  flags.flags[1] = flag("--blocking-input", &cli_blocking_input, "blocks the game on input.");
   
   return flags;
 }
@@ -93,7 +93,7 @@ void cli_apply(
   for (size_t i = 1; i < argc; i++) {
     for (size_t j = 0; j < flags->length; j++) {
       if (strcmp(flags->flags[j].token, argv[i]) == 0) {
-        printf("(?) Checked %s \n", flags->flags[j].token);
+        // printf("(?) Checked %s \n", flags->flags[j].token);
         flags->flags[j].action(state);
         flags->flags[j].selected = TRUE;
       }
