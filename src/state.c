@@ -23,6 +23,7 @@ enum Menu {
 /** Global shared game state. */
 struct State {
   enum Menu menu;
+  NCURSES_BOOL delay_input; 
   char input;
   int distance;
   struct Canyon canyon;
@@ -45,6 +46,7 @@ struct State state_create(void) {
   struct State state = {
     .menu = CANYON,
     .input = ' ',
+    .delay_input = FALSE,
     .distance = 0,
     .canyon = canyon_create(),
     .cyclist = cyclist_create(cyclist_sprite),

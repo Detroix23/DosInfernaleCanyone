@@ -5,6 +5,7 @@
 #ifndef INFERNAL_CANYON_SYSTEM
 #define INFERNAL_CANYON_SYSTEM
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "ncurses.h"
@@ -22,7 +23,7 @@ void throwi(
 ) {
   endwin();
   fprintf(stderr, "\n(X) %s:%d %s() %s.\n", file, line, function, message);
-  exit(1);
+  exit(EXIT_FAILURE);
 }
 
 /** Shorter `throw` call with only `condition` and `message`. */

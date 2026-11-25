@@ -8,9 +8,7 @@
 #include <ncurses.h>
 
 #include "./constants.c"
-#include "./cli.c"
 #include "./game.c"
-
 
 /** Point d'entrée du TP9: canyon infernal. */
 int main(int argc, char *argv[]) {  
@@ -19,13 +17,10 @@ int main(int argc, char *argv[]) {
 
   printf("## Settings. \n");
   printf("- Debug : %s. \n", (DEBUG_ENABLED) ? "enabled" : "disabled");
-    
-  printf("- CLI arguments : \n");
-  cli_print(argc, argv);
-  
+
   printf("\n- RNG_SEED=%u \n", RNG_SEED);
 
-  run();
+  run(argc, argv);
 
   return EXIT_SUCCESS;
 }

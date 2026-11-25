@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "./constants.c"
+#include "./cli.c"
 #include "./arrays.c"
 #include "./rng.c"
 #include "./colors.c"
@@ -123,14 +124,11 @@ void window_initialize(void) {
   // Positionne le curseur au tout début de l'écran.
   curs_set(0);
   refresh();
-  // Débloque les appels à `getch`.
-  nodelay(stdscr, TRUE);
-
   return;
 }
 
 /** Start the `ncurses` windows. */
-void run(void) {
+void run(size_t argc, char *argv[]) {
   rng_create();
 
   struct Bindings bindings = bindings_create(); // (struct Bindings) {NULL, 0};
@@ -140,8 +138,13 @@ void run(void) {
   
   struct State state = state_create();
 
+  struct CliFlags flags = cli_create();
+  cli_apply(argc, argv, &flags, &state);
+  
+  // Appels à `getch`.
+  nodelay(stdscr, !state.delay_input);
+
   while (is_running(&state)) {  
-  	nodelay(stdscr, FALSE);
     state.input = getch();
     update(&state, &bindings);
     draw(&state);
@@ -149,10 +152,13 @@ void run(void) {
     timeout(UPDATE_DELAY);
   }
   endwin();
+  printf("## CLI arguments. \n");
+  cli_print(&flags);
 
   printf("\n## End. \n");
   printf("- Score: d=%d \n", state.distance);
 
+  cli_free(&flags);
   state_free(&state);
   bindings_free(&bindings);
 }
